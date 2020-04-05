@@ -1,0 +1,15 @@
+name: regularized-regression-from-scratch
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - ipykernel
+  - nb_conda
+  - jupyter_contrib_nbextensions
+  - numpy
+  - pandas
+  - seaborn
+  - matplotlib
+  - scikit-learn
+
