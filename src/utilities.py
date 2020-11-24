@@ -60,3 +60,9 @@ def VIF(df):
         return "Good to go!",VIF
     else:
          return "Multicollinearity",VIF
+
+
+def get_error(B, test_data):
+	y_hat = np.dot(test_data.values[:,0:-1],B[1:])+B[0]
+	error = np.linalg.norm(test_data.values[:,-1]-y_hat)**2
+	return(error)

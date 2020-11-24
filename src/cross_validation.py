@@ -15,29 +15,52 @@ def cross_validation_indices(df, k=5):
     sets = np.array_split(indices, k)
     return sets, indices
 
-def cross_validation_parameter_grid(train, regression_fn, n = 100):
-
-
-def cross_validation_error(df, regression_fn, n, k=5):
-    if regression_fn == ols:
-        continue
-    elif regression_fn == ridge:
-        
-    elif regression_fn == lasso: 
-
+def cross_validation_error(df, regression_fn, n, k=5, df_test = None):
+    if regression_fn == regress.ridge:
+        parameter_tuning = np.geomspace(1e-2,1e5, n)
+    elif regression_fn == regress.lasso: 
+        pass
+    elif regression_fn == regress.elastic_net:
+        pass
+    else:
+        parameter_tuning = None
     sets, indices = cross_validation_indices(df, k)
-    error = np.zeros(k)
+    error = np.zeros((n,k))
     B = np.zeros((n, k, len(df.columns)))
     for i in np.arange(k):
         for j in np.arange(n):
             train_indices = [p for p in indices if p not in sets[i]]
             train_data = df.values[train_indices,:]
-            B[j, i, :] = regression_fn(train_data)
             test_data = df.values[sets[i],:]
+            if regression_fn == regress.ridge:
+                B[j, i, :] = regression_fn(train_data, parameter_tuning[j])
+            elif regression_fn == regress.lasso: 
+                train_data, test_data = utils.standardize(train_data, test_data)
+                X = train_data[:,0:-1]
+                y = train_data[:,-1]
+                parameter_tuning_max = max(list(abs(np.dot(np.transpose(X),y)))) / (np.shape(train_data)[1])
+                parameter_tuning = np.geomspace(parameter_tuning_max,parameter_tuning_max*0.0001,n)
+                B[j,i,:], coeffs = regression_fn(train_data, 1, parameter_tuning)
+            elif regression_fn == regress.elastic_net:
+                pass
+            else:
+                B[j, i, :] = regression_fn(train_data) 
             y_hat = np.dot(test_data[:,0:-1],B[j,i, 1:])+B[j,i,0]
-            error[i] = np.linalg.norm(test_data[:,-1]-y_hat)**2
+            error[j,i] = np.linalg.norm(test_data[:,-1]-y_hat)**2
     error_mean = sum(error)/k
-    return error_mean, error, B
+    z = np.unravel_index(error.argmin(), error.shape)
+    try: 
+        parameter_tuning_star = parameter_tuning[z[0]]
+    except:
+        parameter_tuning_star = None
+    try:
+        parameter_model = B[z[0], z[1], :]
+    except:
+        parameter_model = B
+    to_return = dict(zip(['Error Mean', 'Errors', 'Model Parameters', 'Optimal Fitted Model Parameters', 
+                         'Tuning Parameters', 'Optimal Tuning Parameter'], 
+                         [error_mean, error, B, parameter_model, parameter_tuning, parameter_tuning_star]))
+    return to_return
 
 
 def cross_validation(df, n, k=5,type = 'ridge'):

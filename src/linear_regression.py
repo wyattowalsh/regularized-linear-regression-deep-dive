@@ -13,22 +13,21 @@ def ols(df):
     B = np.dot(np.linalg.inv(np.dot(np.transpose(X),X)), (np.dot(np.transpose(X),y)))
     return B
 
-def ridge_regression(df, index, num_parameters):
+def ridge(df, u):
     """Augments data with a 1 column and a 
     diag(square root of lambda*I) then computes OLS"""
-    u = np.geomspace(1e-2,1e5,num_parameters)[index]
-    upper_half = np.append(np.ones((len(df),1)),
+    upper_half = np.append(np.ones((np.shape(df)[0],1)),
                            df[:,0:-1],1)
-    lower_half = np.append(np.zeros((len(df.columns)-1,1)), 
+    lower_half = np.append(np.zeros((np.shape(df)[1]-1,1)), 
                            np.sqrt(u)* 
-                           np.identity(len(df.columns)-1),1)
+                           np.identity(np.shape(df)[1]-1),1)
     X = np.append(upper_half,lower_half,0)
     Y = np.append(df[:,-1],np.zeros(
-        len(df.columns)-1),0)
+        np.shape(df)[1]-1),0)
     B = np.dot(np.linalg.inv(np.dot(np.transpose(X),X)),(np.dot(np.transpose(X),Y)))
     return B
 
-def lasso_regression_covar(df,u,u_path = np.array([])):
+def lasso(df,u,u_path = np.array([])):
     """Solves lasso regression. Since no closed form solution 
     exists we must use optimization to solve for the parameters. 
     Here we implement coordinate descent (CD) with warm starts 
@@ -36,9 +35,8 @@ def lasso_regression_covar(df,u,u_path = np.array([])):
     spaced vector for u. Using the CD update we iterate until 
     the coeffiecients converge and stabilize."""
     
-    df_std = utils.standardize(df)
-    X = np.append(np.ones((len(df),1)),df_std.iloc[:,0:-1].values,1)
-    Y = df.iloc[:,-1].values
+    X = np.append(np.ones((len(df),1)),df[:,0:-1],1)
+    Y = df[:,-1]
     N = np.shape(X)[0]
     
     B_star = np.zeros((np.shape(X)[1]))
@@ -74,9 +72,8 @@ def elastic_net(df,u,alpha,u_path = np.array([])):
     coordinate descent (CD) with warm starts utilizing an equation for u_max 
     so that we can create a log spaced vector for u. Using the CD update we 
     iterate until the coeffiecients converge and stabilize."""
-    dff = utils.standardize(df)
-    X = np.append(np.ones((len(df),1)),dff.iloc[:,0:-1].values,1)
-    Y = df.iloc[:,-1].values
+    X = np.append(np.ones((np.shape(df)[0],1)),df[:,0:-1],1)
+    Y = df[:,-1].values
     N = len(df)
     if alpha == 0:
         alpha = 1e-15
