@@ -16,14 +16,12 @@ def ols(df):
 def ridge(df, u):
     """Augments data with a 1 column and a 
     diag(square root of lambda*I) then computes OLS"""
-    upper_half = np.append(np.ones((np.shape(df)[0],1)),
-                           df[:,0:-1],1)
-    lower_half = np.append(np.zeros((np.shape(df)[1]-1,1)), 
-                           np.sqrt(u)* 
-                           np.identity(np.shape(df)[1]-1),1)
+    print(df)
+    print(np.shape(df))
+    upper_half = np.append(np.ones((np.shape(df)[0],)),df[:,0:-1])
+    lower_half = np.append(np.zeros((np.shape(df)[1]-1,1)), np.sqrt(u)* np.identity(np.shape(df)[1]-1))
     X = np.append(upper_half,lower_half,0)
-    Y = np.append(df[:,-1],np.zeros(
-        np.shape(df)[1]-1),0)
+    Y = np.append(df[:,-1],np.zeros(np.shape(df)[1]-1))
     B = np.dot(np.linalg.inv(np.dot(np.transpose(X),X)),(np.dot(np.transpose(X),Y)))
     return B
 
