@@ -3,19 +3,19 @@
 ## Table of Contents
 - [Introduction](#introduction)
 - [Ordinary Least Squares](#ordinary-least-squares)
-- [Ridge Regression](#ridge-regression) 
-- [Lasso Regression](#lasso-regression)
-- [Elastic Net Regularization](#elastic-net-regularization)
+- [Ridge](#ridge) 
+- [Lasso](#lasso)
+- [Elastic Net](#elastic-net)
 - [Results and Conclusion](#results-and-conclusion)
 
 ## Introduction
 
 ## Ordinary Least Squares
 
-## Ridge Regression 
+## Ridge 
 
-## Lasso Regression 
+## Lasso  
 
-## Elastic Net Regularization
+## Elastic Net
 
 ## Results and Conclusion
