@@ -3,7 +3,7 @@
 # Necessary imports
 from math import *
 import numpy as np
-
+from src import linear_regression as lr
 ### Useful functions ###
 
 def test_train_split(df, proportion_train):
@@ -40,29 +40,34 @@ def unstandardize(B):
                                    ,coeffs)
     return np.append(intercept,coeffs)
 
-def VIF(df):
-    """Computes the VIF for the X data in the dataframe.\
-    VIF of 5 or more indicates multicollinearity among the data
+def VIF(X):
     """
-    VIF = np.zeros(len(df.columns))
-    for i in np.arange(len(df.columns)-1):
-        Y = df.iloc[:,i].values
-        X = df.drop([df.columns[-1],df.columns[i]],1).values
-        B= np.dot(np.linalg.inv(np.dot(np.transpose(X),X)),
-                  (np.dot(np.transpose(X),Y)))
-        Y_hat = np.dot(X,B) 
-        Y_bar = np.mean(Y)
-        SSR = np.dot(np.transpose(Y_hat - Y_bar), Y_hat - Y_bar)
-        SSTO = np.dot(np.transpose(Y-Y_bar),Y-Y_bar)
-        R2 = SSR/SSTO
-        VIF[i] = 1/(1-R2)   
-    if all(i < 5 for i in VIF):
-        return "Good to go!",VIF
-    else:
-         return "Multicollinearity",VIF
+    This function computes variance inflation factors (VIF)
+    for a given feature matrix 
 
+    VIF scores of 5 or higher indicate multicollinearity among the feature vectors
+
+    inputs: X - a feature matrix, size m by n, type numpy ndarray 
+    outputs: vif - array, size n-1
+    """
+    ncols = X.shape[1]
+    vif = np.zeros(ncols)
+    for i in np.arange(ncols):
+        y_vif =  X[:,i]
+        X_vif =  np.delete(X, i, 1)
+        B = lr.ols(X_vif, y_vif, fit_intercept = False)
+        Y_hat = np.dot(X_vif,B) 
+        Y_bar = np.mean(y_vif)
+        SSR = np.dot(np.transpose(Y_hat - Y_bar), Y_hat - Y_bar)
+        SSTO = np.dot(np.transpose(y_vif-Y_bar),y_vif-Y_bar)
+        R2 = SSR/SSTO
+        vif[i] = 1/(1-R2)  
+    if all(i < 5 for i in vif):
+        return "Low Multicollinearity!",vif
+    else:
+         return "High Multicollinearity",vif 
 
 def get_error(B, test_data):
-	y_hat = np.dot(test_data.values[:,0:-1],B[1:])+B[0]
-	error = np.linalg.norm(test_data.values[:,-1]-y_hat)**2
+	y_hat = np.dot(test_data[:,0:-1],B[1:])+B[0]
+	error = np.linalg.norm(test_data[:,-1]-y_hat)**2
 	return(error)

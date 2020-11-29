@@ -1,28 +1,35 @@
 import pandas as pd
 import numpy as np
+import jax.numpy as jnp 
 from math import *
 from src import utilities as utils
 
-def ols(df):
+def ols(X, y, fit_intercept = True):
     """This function takes in a dataframe with x data and 
     y data as the last column.It then proceeds to return the 
     OLS estimates for the different parameters using the 
     closed form solution"""
+    m,n = np.shape(X)
+    if fit_intercept:
+        X = np.hstack((np.ones((m,1)), X))
+    return np.linalg.solve(np.dot(X.T,X), np.dot(X.T,y))
+
+def ridge2(df, l):
     X = np.hstack((np.ones((len(df),1)),df[:,0:-1]))
     y = df[:,-1]
-    B = np.dot(np.linalg.inv(np.dot(np.transpose(X),X)), (np.dot(np.transpose(X),y)))
-    return B
+    c = np.linalg.cholesky(X + l * np.ones(np.shape(X)))
+    B = np.linalg.lstsq(c, y)
+    return(B)
 
-def ridge(df, u):
+def ridge(X, y, u):
     """Augments data with a 1 column and a 
     diag(square root of lambda*I) then computes OLS"""
-    print(df)
-    print(np.shape(df))
-    upper_half = np.append(np.ones((np.shape(df)[0],)),df[:,0:-1])
-    lower_half = np.append(np.zeros((np.shape(df)[1]-1,1)), np.sqrt(u)* np.identity(np.shape(df)[1]-1))
-    X = np.append(upper_half,lower_half,0)
-    Y = np.append(df[:,-1],np.zeros(np.shape(df)[1]-1))
-    B = np.dot(np.linalg.inv(np.dot(np.transpose(X),X)),(np.dot(np.transpose(X),Y)))
+    m, n = np.shape(X)
+    upper_half = np.hstack((np.ones((m,1)), X))
+    lower_half = np.hstack((np.zeros((n,1)), np.sqrt(u)* np.identity(n)))
+    X = np.vstack((upper_half,lower_half))
+    y = np.append(y,np.zeros(n))
+    B = np.linalg.solve(np.dot(X.T,X), np.dot(X.T,y))
     return B
 
 def lasso(df,u,u_path = np.array([])):
