@@ -4,6 +4,11 @@
 from math import *
 import numpy as np
 from src import linear_regression as lr
+import time
+
+import pandas as pd
+
+from sklearn.linear_model import LinearRegression as skols
 ### Useful functions ###
 
 def test_train_split(df, proportion_train):
@@ -71,3 +76,35 @@ def get_error(B, test_data):
 	y_hat = np.dot(test_data[:,0:-1],B[1:])+B[0]
 	error = np.linalg.norm(test_data[:,-1]-y_hat)**2
 	return(error)
+
+def compare(type, X_train, y_train, X_test, y_test, features):
+    test_vals = np.hstack((X_test, y_test))
+    if type == 'ols' or type == 'OLS':
+        start = time.time()
+        ols = lr.ols(X_train, y_train)
+        end = time.time()
+        times_OLS = end-start
+        ols_error = get_error(np.ndarray.flatten(ols), test_vals)
+
+        start = time.time()
+        OLS_fitted_sklearn = skols(fit_intercept= True).fit(X_train, y_train)
+        end = time.time()
+        times_OLS = np.append(times_OLS, end - start)
+        sk_error = get_error(np.append(OLS_fitted_sklearn.intercept_[0], 
+                                             OLS_fitted_sklearn.coef_), test_vals)
+
+        print('Are the error values close?', " ", isclose(ols_error,sk_error))
+
+        ols_row = np.append(np.append(times_OLS[0], ols_error), ols)
+        OLS_sklearn_row = np.append([times_OLS[1], sk_error, 
+                                    OLS_fitted_sklearn.intercept_[0]],
+                                    OLS_fitted_sklearn.coef_)
+        OLS_df = pd.DataFrame(np.vstack((ols_row, OLS_sklearn_row)),
+                             columns = np.append(['Runtime (s)','Error','Y-Intercept'], features))
+        OLS_df.index = ['My Function', "Scikit-Learn's Function"]
+        return(OLS_df)
+
+
+
+
+
