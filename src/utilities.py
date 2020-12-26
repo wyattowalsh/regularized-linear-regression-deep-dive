@@ -9,6 +9,9 @@ import time
 import pandas as pd
 
 from sklearn.linear_model import LinearRegression as skols
+from sklearn.linear_model import Ridge as skridge
+from sklearn.linear_model import Lasso as sklasso
+
 ### Useful functions ###
 
 def test_train_split(df, proportion_train):
@@ -77,32 +80,105 @@ def get_error(B, test_data):
 	error = np.linalg.norm(test_data[:,-1]-y_hat)**2
 	return(error)
 
-def compare(type, X_train, y_train, X_test, y_test, features):
-    test_vals = np.hstack((X_test, y_test))
-    if type == 'ols' or type == 'OLS':
-        start = time.time()
-        ols = lr.ols(X_train, y_train)
-        end = time.time()
-        times_OLS = end-start
-        ols_error = get_error(np.ndarray.flatten(ols), test_vals)
+def create_comparison_table(times, model, sklearn_model, test_data, features):
+    model_error = get_error(np.ndarray.flatten(model), test_data)
+    sk_error = get_error(np.append(sklearn_model.intercept_[0], 
+                                         sklearn_model.coef_), test_data)
+    row_model = np.append(np.append(times[0], model_error), model)
+    row_sklearn = np.append([times[1], sk_error, 
+                    sklearn_model.intercept_[0]],
+                    sklearn_model.coef_)
+    df = pd.DataFrame(np.vstack((row_model, row_sklearn)),
+                         columns = np.append(['Runtime (s)','Error','Y-Intercept'], features))
+    df.index = ['My Function', "Scikit-Learn's Function"]
+    return df
 
-        start = time.time()
-        OLS_fitted_sklearn = skols(fit_intercept= True).fit(X_train, y_train)
-        end = time.time()
-        times_OLS = np.append(times_OLS, end - start)
-        sk_error = get_error(np.append(OLS_fitted_sklearn.intercept_[0], 
-                                             OLS_fitted_sklearn.coef_), test_vals)
+def compare_ols(X_train, y_train, test_data, features):
+    start = time.time()
+    model = lr.ols(X_train, y_train)
+    end = time.time()
+    times = end-start
 
-        print('Are the error values close?', " ", isclose(ols_error,sk_error))
+    start = time.time()
+    sklearn_model = skols(fit_intercept= True).fit(X_train, y_train)
+    end = time.time()
+    times = np.append(times, end - start)
+    return create_comparison_table(times, model, sklearn_model, test_data, features)
 
-        ols_row = np.append(np.append(times_OLS[0], ols_error), ols)
-        OLS_sklearn_row = np.append([times_OLS[1], sk_error, 
-                                    OLS_fitted_sklearn.intercept_[0]],
-                                    OLS_fitted_sklearn.coef_)
-        OLS_df = pd.DataFrame(np.vstack((ols_row, OLS_sklearn_row)),
-                             columns = np.append(['Runtime (s)','Error','Y-Intercept'], features))
-        OLS_df.index = ['My Function', "Scikit-Learn's Function"]
-        return(OLS_df)
+
+def compare_ridge(X_train, y_train, test_data, features, l):
+    X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
+    test_data_std = np.column_stack((X_test_std, test_data[:, -1]))
+    start = time.time()
+    model = lr.ridge(X_train_std, y_train, l)
+    end = time.time()
+    times = end-start
+
+    start = time.time()
+    sklearn_model = skridge(l, fit_intercept= True).fit(X_train_std, y_train)
+    end = time.time()
+    times = np.append(times, end - start)
+    return create_comparison_table(times, model, sklearn_model, test_data_std, features)
+
+def compare_lasso(X_train, y_train, test_data, features, l):
+    X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
+    test_data_std = np.column_stack((X_test_std, test_data[:, -1]))
+    start = time.time()
+    model = lr.lasso(X_train_std, y_train, l)[0]
+    end = time.time()
+    times = end-start
+
+    start = time.time()
+    sklearn_model = sklasso(l, fit_intercept= True).fit(X_train_std, y_train)
+    end = time.time()
+    times = np.append(times, end - start)
+    return create_comparison_table(times, model, sklearn_model, test_data_std, features)
+
+
+
+    #             (model_function, *model_function_args, standardize_features=True, X_train, y_train, X_test, y_test, features):
+    # train = np.hstack((X_train, y_train))
+    # test = np.hstack((X_test, y_test))
+
+    # if standardize_features:
+    #     train, test = standardize(train, test)
+
+    # start = time.time()
+    # estimate_model_parameters = np.ndarray.flatten(model_function(X_train, y_train, *model_function_args))
+    # end = time.time()
+    # times = end - start
+    # error = get_error(estimate_model_parameters, test)
+
+
+
+
+    # if type == 'ols' or type == 'OLS':
+        
+
+    # elif type == 'ridge':
+    #     start = time.time()
+    #     ridge_preds = lr.ridge(X_train, y_train, l2_tune)
+    #     end = time.time()
+    #     times = end-start
+    #     error = get_error(np.ndarray.flatten(ridge_preds), test_vals)
+
+    #     start = time.time()
+    #     ridge_fitted_sklearn = ridge(fit_intercept= True).fit(X_train, y_train)
+    #     end = time.time()
+    #     times = np.append(times, end - start)
+    #     sk_error = get_error(np.append(ridge_fitted_sklearn.intercept_[0], 
+    #                                          ridge_fitted_sklearn.coef_), test_vals)
+
+    #     # print('Are the error values close?', " ", isclose(error,sk_error))
+
+    #     row = np.append(np.append(times[0], error), ridge_preds)
+    #     sklearn_row = np.append([times[1], sk_error, 
+    #                                 ridge_fitted_sklearn.intercept_[0]],
+    #                                 ridge_fitted_sklearn.coef_)
+    #     OLS_df = pd.DataFrame(np.vstack((row, sklearn_row)),
+    #                          columns = np.append(['Runtime (s)','Error','Y-Intercept'], features))
+    #     OLS_df.index = ['My Function', "Scikit-Learn's Function"]
+    #     return(OLS_df)
 
 
 

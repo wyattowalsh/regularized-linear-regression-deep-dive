@@ -17,11 +17,11 @@ def get_folds(X, y, k=5):
     fn = lambda index: df[sets[index],:]
     return [fn(i) for i in np.arange(5)]
 
-def ridge(X, y, n=100, k=5):
+def ridge(X, y, num_lambdas=100, k=5):
     '''This function performs K-Fold Cross-Validation for Ridge Regression. 
     This is accomplished through numpy operations on a numpy matrix input over 
     a given number of tuning parameters (n) and number of folds (k)'''
-    tuning_params =  np.geomspace(0.1,1, n)
+    tuning_params =  np.flip(np.geomspace(10000, 1e-10, num_lambdas))
     B_list = []
     errors = []
     folds = get_folds(X, y, k)
@@ -32,8 +32,9 @@ def ridge(X, y, n=100, k=5):
         X_test, y_test = X[i], y[i]
         X_train = np.vstack([X[i] for i in np.delete(fold_index, i)])
         y_train = np.vstack([y[i] for i in np.delete(fold_index, i)])
-        B = [lr.ridge(X_train, y_train, tuning_params[i]) for i in np.arange(n)]
-        error = [utils.get_error(B[i], np.hstack((X_test, y_test))) for i in np.arange(n)]
+        X_train_std, X_test_std = utils.standardize(X_train, X_test)
+        B = [lr.ridge(X_train_std, y_train, tuning_params[i]) for i in np.arange(num_lambdas)]
+        error = [utils.get_error(B[i], np.hstack((X_test_std, y_test))) for i in np.arange(num_lambdas)]
         B_list = B_list + [B]
         errors = errors + [error]
     fold_means = np.mean(np.array(errors),0)
@@ -41,21 +42,36 @@ def ridge(X, y, n=100, k=5):
     tune_star = tuning_params[optimal_tune_index]
     B_star = lr.ridge(X_train, y_train, tune_star)
     return([errors, fold_means, fold_means[optimal_tune_index], B_star, tuning_params, tune_star])
-    # # loop over each tuning parameter
-    # train_indices = [[p for p in indices if p not in sets[j]] for j in np.arange(k)]
-    # X_train  = [X[train_indices[i],:] for i in np.arange(k)]
-    # y_train = [y[train_indices[i],:] for i in np.arange(k)]
-    # X_test = [X[sets[i],:] for i in np.arange(k)]
-    # y_test = [y[sets[i],:] for i in np.arange(k)]
-    # B = np.vectorize(lr.ridge)(X_train, y_train, tuning_params)
-    # errors = np.vectorize(utils.get_error)(B, test)
-    # errors_mean = np.append(errors_mean, np.mean(errors, (0,1)))
-    # parameter_tuning_best_index = errors_mean.argmin()
-    # parameter_tuning_star = parameters_tuning[parameter_tuning_best_index]
-    # B_star = regress.ridge(df, parameter_tuning_star) 
-                         
-    # return([errors, errors_mean, errors_mean[parameter_tuning_best_index],
-    #                      B_star, parameters_tuning, parameter_tuning_star])
+
+def lasso(X, y, num_lambdas=100, k=5):
+    '''This function performs K-Fold Cross-Validation for Ridge Regression. 
+    This is accomplished through numpy operations on a numpy matrix input over 
+    a given number of tuning parameters (n) and number of folds (k)'''
+    X_std = utils.standardize(X, 0)[0]
+    tuning_params_max = max(list(abs(np.dot(np.transpose(X_std),y)))) / (np.shape(X_std)[1])
+    tuning_params = np.geomspace(tuning_params_max,tuning_params_max*0.0001, num_lambdas)
+    B_list = []
+    errors = []
+    folds = get_folds(X, y, k)
+    X = [folds[i][:,0:-1] for i in np.arange(k)]
+    y = [folds[i][:, [-1]] for i in np.arange(k)]
+    fold_index = np.arange(k)
+    for i in fold_index:
+        X_test, y_test = X[i], y[i]
+        X_train = np.vstack([X[i] for i in np.delete(fold_index, i)])
+        y_train = np.vstack([y[i] for i in np.delete(fold_index, i)])
+        X_train_std, X_test_std = utils.standardize(X_train, X_test)
+        B = [lr.lasso(X_train_std, y_train, l) for l in tuning_params] 
+        error = [utils.get_error(B[i], np.hstack((X_test_std, y_test))) for i in np.arange(num_lambdas)]
+        B_list = B_list + [B]
+        errors = errors + [error]
+    fold_means = np.mean(np.array(errors),0)
+    optimal_tune_index = fold_means.argmin()
+    tune_star = tuning_params[optimal_tune_index]
+    B_star = lr.lasso(X_train, y_train, tune_star)
+    return([errors, fold_means, fold_means[optimal_tune_index], B_star, tuning_params, tune_star])
+
+
 
 def cross_validation_error(df, regression_fn, n, k=5, df_test = None):
     if regression_fn == regress.ridge:
