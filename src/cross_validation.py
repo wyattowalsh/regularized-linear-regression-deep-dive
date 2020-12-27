@@ -43,33 +43,31 @@ def ridge(X, y, num_lambdas=100, k=5):
     B_star = lr.ridge(X_train, y_train, tune_star)
     return([errors, fold_means, fold_means[optimal_tune_index], B_star, tuning_params, tune_star])
 
-def lasso(X, y, num_lambdas=100, k=5):
+def lasso(X_train, y_train, num_lambdas=100, k=5):
     '''This function performs K-Fold Cross-Validation for Ridge Regression. 
     This is accomplished through numpy operations on a numpy matrix input over 
     a given number of tuning parameters (n) and number of folds (k)'''
-    X_std = utils.standardize(X, 0)[0]
-    tuning_params_max = max(list(abs(np.dot(np.transpose(X_std),y)))) / (np.shape(X_std)[1])
-    tuning_params = np.geomspace(tuning_params_max,tuning_params_max*0.0001, num_lambdas)
+    tuning_params = np.geomspace(25, 1e-4, num_lambdas)
+
     B_list = []
     errors = []
-    folds = get_folds(X, y, k)
+    folds = get_folds(X_train, y_train, k)
     X = [folds[i][:,0:-1] for i in np.arange(k)]
     y = [folds[i][:, [-1]] for i in np.arange(k)]
     fold_index = np.arange(k)
     for i in fold_index:
         X_test, y_test = X[i], y[i]
-        X_train = np.vstack([X[i] for i in np.delete(fold_index, i)])
-        y_train = np.vstack([y[i] for i in np.delete(fold_index, i)])
+        X_train = np.vstack([X[j] for j in np.delete(fold_index, i)])
+        y_train = np.vstack([y[j] for j in np.delete(fold_index, i)])
         X_train_std, X_test_std = utils.standardize(X_train, X_test)
-        B = [lr.lasso(X_train_std, y_train, l) for l in tuning_params] 
-        error = [utils.get_error(B[i], np.hstack((X_test_std, y_test))) for i in np.arange(num_lambdas)]
+        B = [lr.lasso(X_train_std, y_train, l) for l in tuning_params]
+        error = [utils.get_error(B[j], np.hstack((X_test_std, y_test))) for j in np.arange(num_lambdas)]
         B_list = B_list + [B]
         errors = errors + [error]
     fold_means = np.mean(np.array(errors),0)
     optimal_tune_index = fold_means.argmin()
     tune_star = tuning_params[optimal_tune_index]
-    B_star = lr.lasso(X_train, y_train, tune_star)
-    return([errors, fold_means, fold_means[optimal_tune_index], B_star, tuning_params, tune_star])
+    return [errors, fold_means, fold_means[optimal_tune_index], tuning_params, tune_star]
 
 
 

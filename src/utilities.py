@@ -29,6 +29,7 @@ def standardize(train, test):
     {(value - mean(value))/(sd of value)} on the predictors.
     This gives the data a mean of 0 and variance of 1"""
     train = train.copy()
+    test = test.copy()
     train_mean = np.mean(train, axis=0)
     train_std = np.std(train, axis = 0)
     train = (train - train_mean) / train_std
@@ -75,10 +76,18 @@ def VIF(X):
     else:
          return "High Multicollinearity",vif 
 
+def soft_thresholding_operator(z, gamma):
+    if z > 0 and gamma < abs(z):
+        return z - gamma
+    elif z < 0 and gamma < abs(z):
+        return z + gamma 
+    elif gamma >= abs(z):
+        return 0
+
 def get_error(B, test_data):
-	y_hat = np.dot(test_data[:,0:-1],B[1:])+B[0]
+	y_hat = np.dot(test_data[:,0:-1],B[1:]) + B[0]
 	error = np.linalg.norm(test_data[:,-1]-y_hat)**2
-	return(error)
+	return error
 
 def create_comparison_table(times, model, sklearn_model, test_data, features):
     model_error = get_error(np.ndarray.flatten(model), test_data)
@@ -124,7 +133,7 @@ def compare_lasso(X_train, y_train, test_data, features, l):
     X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
     test_data_std = np.column_stack((X_test_std, test_data[:, -1]))
     start = time.time()
-    model = lr.lasso(X_train_std, y_train, l)[0]
+    model = lr.lasso(X_train_std, y_train, l)
     end = time.time()
     times = end-start
 
