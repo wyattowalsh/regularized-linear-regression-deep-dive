@@ -11,7 +11,7 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression as skols
 from sklearn.linear_model import Ridge as skridge
 from sklearn.linear_model import Lasso as sklasso
-
+from sklearn.linear_model import ElasticNet as skelasticnet
 ### Useful functions ###
 
 def test_train_split(df, proportion_train):
@@ -49,7 +49,7 @@ def unstandardize(B):
                                    ,coeffs)
     return np.append(intercept,coeffs)
 
-def VIF(X):
+def VIF(train_df):
     """
     This function computes variance inflation factors (VIF)
     for a given feature matrix 
@@ -59,6 +59,9 @@ def VIF(X):
     inputs: X - a feature matrix, size m by n, type numpy ndarray 
     outputs: vif - array, size n-1
     """
+    train_df = train_df.copy()
+    del train_df['quality']
+    X = train_df.values
     ncols = X.shape[1]
     vif = np.zeros(ncols)
     for i in np.arange(ncols):
@@ -72,9 +75,10 @@ def VIF(X):
         R2 = SSR/SSTO
         vif[i] = 1/(1-R2)  
     if all(i < 5 for i in vif):
-        return "Low Multicollinearity!",vif
+        print("Low Multicollinearity Detected (All VIF Scores Less Than Five")   
     else:
-         return "High Multicollinearity",vif 
+        print("High Multicollinearity Detected")
+    return pd.DataFrame(vif, index = train_df.columns).T
 
 def soft_thresholding_operator(z, gamma):
     if z > 0 and gamma < abs(z):
@@ -133,7 +137,7 @@ def compare_lasso(X_train, y_train, test_data, features, l):
     X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
     test_data_std = np.column_stack((X_test_std, test_data[:, -1]))
     start = time.time()
-    model = lr.lasso(X_train_std, y_train, l)
+    model = lr.lasso(X_train_std, y_train, l1=l)
     end = time.time()
     times = end-start
 
@@ -143,53 +147,17 @@ def compare_lasso(X_train, y_train, test_data, features, l):
     times = np.append(times, end - start)
     return create_comparison_table(times, model, sklearn_model, test_data_std, features)
 
+def compare_elastic_net(X_train, y_train, test_data, features, l1, l2):
+    X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
+    test_data_std = np.column_stack((X_test_std, test_data[:, -1]))
+    start = time.time()
+    model = lr.elastic_net(X_train_std, y_train, l1, l2)
+    end = time.time()
+    times = end-start
 
-
-    #             (model_function, *model_function_args, standardize_features=True, X_train, y_train, X_test, y_test, features):
-    # train = np.hstack((X_train, y_train))
-    # test = np.hstack((X_test, y_test))
-
-    # if standardize_features:
-    #     train, test = standardize(train, test)
-
-    # start = time.time()
-    # estimate_model_parameters = np.ndarray.flatten(model_function(X_train, y_train, *model_function_args))
-    # end = time.time()
-    # times = end - start
-    # error = get_error(estimate_model_parameters, test)
-
-
-
-
-    # if type == 'ols' or type == 'OLS':
-        
-
-    # elif type == 'ridge':
-    #     start = time.time()
-    #     ridge_preds = lr.ridge(X_train, y_train, l2_tune)
-    #     end = time.time()
-    #     times = end-start
-    #     error = get_error(np.ndarray.flatten(ridge_preds), test_vals)
-
-    #     start = time.time()
-    #     ridge_fitted_sklearn = ridge(fit_intercept= True).fit(X_train, y_train)
-    #     end = time.time()
-    #     times = np.append(times, end - start)
-    #     sk_error = get_error(np.append(ridge_fitted_sklearn.intercept_[0], 
-    #                                          ridge_fitted_sklearn.coef_), test_vals)
-
-    #     # print('Are the error values close?', " ", isclose(error,sk_error))
-
-    #     row = np.append(np.append(times[0], error), ridge_preds)
-    #     sklearn_row = np.append([times[1], sk_error, 
-    #                                 ridge_fitted_sklearn.intercept_[0]],
-    #                                 ridge_fitted_sklearn.coef_)
-    #     OLS_df = pd.DataFrame(np.vstack((row, sklearn_row)),
-    #                          columns = np.append(['Runtime (s)','Error','Y-Intercept'], features))
-    #     OLS_df.index = ['My Function', "Scikit-Learn's Function"]
-    #     return(OLS_df)
-
-
-
-
+    start = time.time()
+    sklearn_model = skelasticnet(alpha = l1 + l2, l1_ratio= l1/(l1+l2), fit_intercept= True).fit(X_train_std, y_train)
+    end = time.time()
+    times = np.append(times, end - start)
+    return create_comparison_table(times, model, sklearn_model, test_data_std, features)
 
