@@ -6,13 +6,13 @@ Link to Binder cloud-hosted notebook: [![Binder](https://mybinder.org/badge_logo
 
 ## Project Overview
 
-Here I implement Ordinary Least Squares (OLS) regression, Ridge regression, Lasso regression, and Elastic Net regression from scratch using only the NumPy and math Python libraries. 
+Here I implement Ordinary Least Squares (OLS) regression, Ridge regression, Lasso regression, and Elastic Net regression from scratch using only basic Python libraries
 
 For the cases of OLS and Ridge regression, model estimators are derived analytically and their uniqueness is proven.
 
 In the cases of the Lasso and the Elastic Net, a closed-form solution cannot be analytically derived due to the piece-wise nature of the L<sub>1</sub> penalty. To overcome this matter, the pathwise Coordinate Descent algorithm is implemented and utilized. 
 
-These regression algorithms are applied to a wine quality prediction dataset. 
+These regression algorithms are applied to a wine quality prediction dataset obtained through a class final project at UC Berkeley. 
 
 Functions for creating a train-test split as well as feature standardizization are implemented. Furthermore, the dataset is analyzed for multicollinearity among features. For the models containing hyperparameters (all the regularization techniques), K-Fold cross-validation is also implemented. Runtime, error, and model parameter comparisons with the associated Scikit-Learn algorithms are given, with the results of the author's implementations surpassing the results of Scikit-Learn for every algorithm. Visualizations of model parameter values across a range of hyperparameter values are generated. Finally, model accuracies are compared and a recommendation is given for which model to use for this case. 
 
