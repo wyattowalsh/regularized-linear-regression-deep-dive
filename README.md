@@ -9,9 +9,9 @@ This project consists of a deep dive on multiple linear regression (OLS) and its
 </p>
 
 <p align="center">
-    <a href=#explanation-of-repository-contents>Explanation of Repository Contents</a> |·|
-    <a href=#project-overview>Project Overview</a> |·|
-    <a href=#installation-instructions>Installation Instructions</a> 
+    <a href=#explanation-of-repository-contents>Explanation of Repository Contents</a>  ·
+    <a href=#project-overview> Project Overview</a>  ·
+    <a href=#installation-instructions> Installation Instructions</a> 
   <br><br>
 </p>
 
