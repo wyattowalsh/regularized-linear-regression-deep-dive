@@ -1,4 +1,4 @@
-# Regularized Linear Regression Deep Dive: <br> Application to Wine Quality Dataset Regression 
+# Regularized Linear Regression Deep Dive: <br> Application to Wine Quality Regression Dataset 
 
 This project consists of a deep dive on multiple linear regression (OLS) and its regularized variants (Ridge, the Lasso, and the Elastic Net) as well as Python implementations for exploratory data analysis, K-Fold cross-validation and modeling functions as applied to regression of a wine quality dataset. This examination applies optimization theory to either derive model estimator (for OLS and Ridge) or derive the update rule for Pathwise Coordinate Descent (the discrete optimization algorithm chosen and implemented to solve the Lasso and the Elastic Net). These derivations have accompanying Python implementations, which are leveraged to predict wine quality ratings within a supervised learning context. Click the link below to load an interactive version of the project notebook in your browser using the *Binder* service or continue reading below for more project information. 
 
