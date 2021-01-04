@@ -1,20 +1,23 @@
-# Regularized Linear Regression Deep Dive: <br> Application to Wine Quality Regression Dataset 
+<h1 align="center"> Regularized Linear Regression Deep Dive: <br> Application to Wine Quality Regression Dataset <h1>
 
-This project consists of a deep dive on multiple linear regression (OLS) and its regularized variants (Ridge, the Lasso, and the Elastic Net) as well as Python implementations for exploratory data analysis, K-Fold cross-validation and modeling functions as applied to regression of a wine quality dataset. This examination applies optimization theory to either derive model estimator (for OLS and Ridge) or derive the update rule for Pathwise Coordinate Descent (the discrete optimization algorithm chosen and implemented to solve the Lasso and the Elastic Net). These derivations have accompanying Python implementations, which are leveraged to predict wine quality ratings within a supervised learning context. Click the link below to load an interactive version of the project notebook in your browser using the *Binder* service or continue reading below for more project information. 
+This project consists of a deep dive on multiple linear regression (OLS) and its regularized variants (Ridge, the Lasso, and the Elastic Net) as well as Python implementations for exploratory data analysis, K-Fold cross-validation and modeling functions as applied to regression of a wine quality dataset. This examination applies optimization theory to either derive model estimator (for OLS and Ridge) or derive the update rule for Pathwise Coordinate Descent (the discrete optimization algorithm chosen and implemented to solve the Lasso and the Elastic Net). These derivations have accompanying Python implementations, which are leveraged to predict wine quality ratings within a supervised learning context.
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/wyattowalsh/regularized-regression-from-scratch/HEAD?filepath=nb.ipynb)
+<p align="center">
+  Interact with the project notebook in your web browser using the <i>Binder</i> service  
+<a href=https://mybinder.org/v2/gh/wyattowalsh/regularized-regression-from-scratch/HEAD?filepath=nb.ipynb> <img src=https://mybinder.org/badge_logo.svg></a>
+ <br><br>
+</p>
 
---- 
+<p align="center">
+    <a href=#explanation-of-repository-contents>Explanation of Repository Contents</a> ·
+    <a href=#project-overview>Project Overview</a> ·
+    <a href=#installation-instructions>Installation Instructions</a> 
+  <br><br>
+</p>
 
-## Contents
+---
 
-- [Explanation of Repository Contents](#Explanation-of-Repository-Contents)
-- [Project Overview](#Project-Overview)
-- [Installation Instructions](#Installation-Instructions)
-
---- 
-
-## Explanation of Repository Contents
+## Explanation of Repository Contents 
 
 - `data/` - contains the project's wine quality dataset 
 - `src/` - holds all the project source code
@@ -23,7 +26,7 @@ This project consists of a deep dive on multiple linear regression (OLS) and its
 
 ---
 
-## Project Overview
+## Project Overview  
 
 Here I implement Ordinary Least Squares (OLS) regression, Ridge regression, Lasso regression, and Elastic Net regression from scratch using only basic Python libraries
 
@@ -39,7 +42,7 @@ To gain the best sense of the project I recommend viewing  `nb.ipynb` either loc
 
 --- 
 
-## Installation Instructions
+## Installation Instructions 
 
 `environment.yml`  can be found in the repository's root directory for your version of interest and used to install necessary project dependencies. If able to successfully configure your computing environment, then launch Jupyter Notebook from your command prompt and navigate to `nb.ipynb`. If unable to successfully configure your computing environment refer to the sections below to install necessary system tools and package dependencies. The following sections may be cross-platform compatibile in several places, however is geared towards macOS<sup>[1](#footnote1)</sup>.
 
