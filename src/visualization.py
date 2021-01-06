@@ -15,7 +15,6 @@ def scatter_matrix(train):
     plot = sns.pairplot(train, hue='quality', palette='icefire')
     return plot
 
-
 def correlation_heatmap(train_df):
     train_df = train_df.copy()
     del train_df["quality"]

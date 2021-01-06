@@ -20,7 +20,7 @@ def test_train_split(df, proportion_train):
     Returns:
         Tuple of training dataframe and testing dataframe split from input dataframe
     """
-    shuffled = df.sample(frac=1, random_state=42).reset_index(drop=True)
+    shuffled = df.sample(frac=1, random_state=18).reset_index(drop=True)
     split = floor(len(shuffled) * proportion_train)
     train = shuffled.iloc[:split, :]
     test = shuffled.iloc[split:, :].reset_index(drop=True)
