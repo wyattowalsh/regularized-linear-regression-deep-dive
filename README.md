@@ -4,7 +4,7 @@ This project consists of a deep dive on multiple linear regression (OLS) and its
 
 <p align="center">
   Interact with the project notebook in your web browser using the <i>Binder</i> service  
-<a href=https://mybinder.org/v2/gh/wyattowalsh/regularized-regression-from-scratch/HEAD?filepath=nb.ipynb> <img src=https://mybinder.org/badge_logo.svg></a>
+<a href=https://mybinder.org/v2/gh/wyattowalsh/regularized-linear-regression-deep-dive/HEAD?filepath=nb.ipynb> <img src=https://mybinder.org/badge_logo.svg></a>
  <br><br>
 </p>
 
