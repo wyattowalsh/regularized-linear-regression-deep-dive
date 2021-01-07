@@ -87,9 +87,9 @@ def lasso(X_train, y_train, num_lambdas=100, k=5):
 
 
 def elastic_net(X_train, y_train, num_lambdas=50, k=5):
-    l1 = np.geomspace(1e-6, 1, num_lambdas)
-    l2 = np.linspace(1e-6, 1, num_lambdas)
-    tuning_params = list(product(l1, l2))
+    l = np.geomspace(1e-6, 50000, num_lambdas)
+    alpha = np.linspace(1e-6, 1, num_lambdas)
+    tuning_params = list(product(l, alpha))
 
     B_list = []
     errors = []
@@ -103,8 +103,8 @@ def elastic_net(X_train, y_train, num_lambdas=50, k=5):
         y_train = np.vstack([y[j] for j in np.delete(fold_index, i)])
         X_train_std, X_test_std = utils.standardize(X_train, X_test)
         B = [
-            lr.elastic_net(X_train_std, y_train, l[0], l[1])
-            for l in tuning_params
+            lr.elastic_net(X_train_std, y_train, tuning_param[0], tuning_param[1])
+            for tuning_param in tuning_params
         ]
         error = [
             utils.get_error(B[j], np.hstack((X_test_std, y_test)))

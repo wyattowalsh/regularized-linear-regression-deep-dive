@@ -93,7 +93,7 @@ def lasso(X, y, l1, tol=1e-6, path_length=100, return_path=False):
         return B_star
 
 
-def elastic_net(X, y, l1, l2, tol=1e-4, path_length=100, return_path=False):
+def elastic_net(X, y, l, alpha, tol=1e-4, path_length=100, return_path=False):
     """The Elastic Net Regression model with intercept term.
     Intercept term included via design matrix augmentation.
     Pathwise coordinate descent with co-variance updates is applied.
@@ -114,12 +114,12 @@ def elastic_net(X, y, l1, l2, tol=1e-4, path_length=100, return_path=False):
     X = np.hstack((np.ones((len(X), 1)), X))
     m, n = np.shape(X)
     B_star = np.zeros((n))
-    if l2 == 0:
-        l2 = 1e-15
-    l_max = max(list(abs(np.dot(np.transpose(X), y)))) / m / l2
-    if l1 >= l_max:
+    if alpha == 0:
+        alpha = 1e-15
+    l_max = max(list(abs(np.dot(np.transpose(X), y)))) / m / alpha
+    if l >= l_max:
         return np.append(np.mean(y), np.zeros((n - 1)))
-    l1_path = np.geomspace(l_max, l1, path_length)
+    l_path = np.geomspace(l_max, l, path_length)
     for i in range(path_length):
         while True:
             B_s = B_star
@@ -129,7 +129,7 @@ def elastic_net(X, y, l1, l2, tol=1e-4, path_length=100, return_path=False):
                                 np.dot(np.dot(X[:,j], X[:,k]), B_s[k]))) + \
                                 B_s[j]
                 B_star[j] = (np.sign(update) * max(
-                    abs(update) - l1_path[i] * l2, 0)) / (1 + (l1_path[i] * (1 - l2)))
+                    abs(update) - l_path[i] * alpha, 0)) / (1 + (l_path[i] * (1 - alpha)))
             if np.all(abs(B_s - B_star) < tol):
                 break
     return B_star

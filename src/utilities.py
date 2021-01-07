@@ -20,7 +20,7 @@ def test_train_split(df, proportion_train):
     Returns:
         Tuple of training dataframe and testing dataframe split from input dataframe
     """
-    shuffled = df.sample(frac=1, random_state=18).reset_index(drop=True)
+    shuffled = df.sample(frac=1, random_state=42).reset_index(drop=True)
     split = floor(len(shuffled) * proportion_train)
     train = shuffled.iloc[:split, :]
     test = shuffled.iloc[split:, :].reset_index(drop=True)
@@ -99,7 +99,7 @@ def create_comparison_table(times, model, sklearn_model, test_data, features):
     df.index = ['My Function', "Scikit-Learn's Function"]
     return df
 
-def compare(X_train, y_train, test_data, features, model, l1=None, l2=None):
+def compare(X_train, y_train, test_data, features, model, l=None, alpha=None):
     if model == lr.ols:
         start = time.time()
         model = model(X_train, y_train)
@@ -112,31 +112,31 @@ def compare(X_train, y_train, test_data, features, model, l1=None, l2=None):
         X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
         test_data = np.column_stack((X_test_std, test_data[:, -1]))
         start = time.time()
-        model = model(X_train_std, y_train, l2=l2)
+        model = model(X_train_std, y_train, l2=l)
         end = time.time()
         times = end - start
         start = time.time()
-        sklearn_model = Ridge(l2, fit_intercept=True).fit(X_train_std, y_train)
+        sklearn_model = Ridge(l, fit_intercept=True).fit(X_train_std, y_train)
         end = time.time()
     elif model == lr.lasso:
         X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
         test_data = np.column_stack((X_test_std, test_data[:, -1]))
         start = time.time()
-        model = model(X_train_std, y_train, l1=l1)
+        model = model(X_train_std, y_train, l1=l)
         end = time.time()
         times = end - start
         start = time.time()
-        sklearn_model = Lasso(l1, fit_intercept=True).fit(X_train_std, y_train)
+        sklearn_model = Lasso(l, fit_intercept=True).fit(X_train_std, y_train)
         end = time.time()
     elif model == lr.elastic_net:
         X_train_std, X_test_std = standardize(X_train, test_data[:, 0:-1])
         test_data = np.column_stack((X_test_std, test_data[:, -1]))
         start = time.time()
-        model = model(X_train_std, y_train, l1=l1, l2=l2)
+        model = model(X_train_std, y_train, l=l, alpha=alpha)
         end = time.time()
         times = end - start
         start = time.time()
-        sklearn_model = ElasticNet(alpha=l1, l1_ratio=l2, fit_intercept=True).fit(X_train_std, y_train)
+        sklearn_model = ElasticNet(alpha=l, l1_ratio=alpha, fit_intercept=True).fit(X_train_std, y_train)
         end = time.time()
     
     times = np.append(times, end - start)
