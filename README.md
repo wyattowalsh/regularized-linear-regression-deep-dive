@@ -4,7 +4,7 @@ This project consists of a deep dive on multiple linear regression (OLS) and its
 
 <p align="center">
   Interact with the project notebook in your web browser using the <i>Binder</i> service  
-<a href=https://mybinder.org/v2/gh/wyattowalsh/regularized-regression-from-scratch/HEAD?filepath=nb.ipynb> <img src=https://mybinder.org/badge_logo.svg></a>
+<a href=https://mybinder.org/v2/gh/wyattowalsh/regularized-linear-regression-deep-dive/HEAD?filepath=nb.ipynb> <img src=https://mybinder.org/badge_logo.svg></a>
  <br><br>
 </p>
 
@@ -26,19 +26,11 @@ This project consists of a deep dive on multiple linear regression (OLS) and its
 
 ---
 
-## Project Overview  
+## Technical Overview  
 
-Here I implement Ordinary Least Squares (OLS) regression, Ridge regression, Lasso regression, and Elastic Net regression from scratch using only basic Python libraries
+The entirety of this project is written in Python (version 3.8) with a majority of functions depending on NumPy and several on pandas. Matplotlib and Seaborn are used for visualization. Furthermore, there are a few other simple dependencies used like the time or math libraries. 
 
-For the cases of OLS and Ridge regression, model estimators are derived analytically and their uniqueness is proven.
-
-In the cases of the Lasso and the Elastic Net, a closed-form solution cannot be analytically derived due to the piece-wise nature of the L<sub>1</sub> penalty. To overcome this matter, the Pathwise Coordinate Descent algorithm is implemented and utilized. 
-
-These regression algorithms are applied to a wine quality prediction dataset obtained through a class final project at UC Berkeley. 
-
-Functions for creating a train-test split as well as feature standardizization are implemented. Furthermore, the dataset is analyzed for multicollinearity among features. For the models containing hyperparameters (all the regularization techniques), K-Fold cross-validation is also implemented. Runtime, error, and model parameter comparisons with the associated Scikit-Learn algorithms are given, with the results of the author's implementations surpassing the results of Scikit-Learn for every algorithm. Visualizations of model parameter values across a range of hyperparameter values are generated. Finally, model accuracies are compared and a recommendation is given for which model to use for this case. 
-
-To gain the best sense of the project I recommend viewing  `nb.ipynb` either locally or through Binder and then looking at the associated model code within the `src` directory of this repository if interested. 
+Implementations can be found for train-test data splitting, variance inflation factor calculation, K-Fold cross-validation, ordinary least squares (OLS), Ridge, the Lasso, and the Elastic Net as well as several other functions used to produce the notebook. 
 
 --- 
 
