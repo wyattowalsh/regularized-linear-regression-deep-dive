@@ -4,14 +4,14 @@ This project consists of a deep dive on multiple linear regression (OLS) and its
 
 <p align="center">
   A three-part series of blog posts on this topic was published in <a href='https://towardsdatascience.com/'><b><i>Towards Data Science</i></b></a> <br> Read them here:
-  <a ttarget="_blank" rel="noopener noreferrer" href='https://towardsdatascience.com/tagged/regularized-regression'><img src='https://img.shields.io/badge/Medium-View%20on%20Medium-red?logo=medium'/>
+  <a target="_blank" rel="noopener noreferrer" href='https://towardsdatascience.com/tagged/regularized-regression'><img src='https://img.shields.io/badge/Medium-View%20on%20Medium-red?logo=medium'/></a>
 <!--   <a href='https://towardsdatascience.com/regularized-linear-regression-models-57bbdce90a8c'><b>Part One</b></a>, <a href='https://towardsdatascience.com/regularized-linear-regression-models-44572e79a1b5'><b>Part Two</b></a>, and <a href='https://towardsdatascience.com/regularized-linear-regression-models-dcf5aa662ab9'><b>Part Three</b></a> -->
  <br><br>
 </p>
 
 <p align="center">
   Interact with the project notebook in your web browser using the <i>Binder</i> service  
-<a target="_blank" rel="noopener noreferrer" href=https://mybinder.org/v2/gh/wyattowalsh/regularized-linear-regression-deep-dive/HEAD?filepath=nb.ipynb> <img src=https://mybinder.org/badge_logo.svg></a>
+<a target="_blank" rel="noopener noreferrer" href=https://mybinder.org/v2/gh/wyattowalsh/regularized-linear-regression-deep-dive/HEAD?filepath=nb.ipynb><img src=https://mybinder.org/badge_logo.svg></a>
  <br><br>
 </p>
 
